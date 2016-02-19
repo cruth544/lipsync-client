@@ -1,0 +1,14 @@
+<div class="record">
+  <div class="preview-bg">
+    <video id="camera-preview" autoplay></video>
+    <audio id="song-preview" src="{{song.src}}"></audio>
+  </div>
+  <div class="back-container">
+    <button id="back-button"class="my-buttons large button" ng-click="back()"><-</button>
+    <button id="cancel-button"class="my-buttons large alert button" ng-click="cancel()">X</button>
+  </div>
+  <div class="button-container container">
+    <button id="camera-button" class="large alert button" ng-click="toggleRecording()">O</button>
+    <button id="next-button" class="my-buttons large success button" ng-click="next()">>></button>
+  </div>
+</div>
