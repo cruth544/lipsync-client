@@ -3,7 +3,7 @@ app
   ['$scope', '$http', '$state', 'Auth',
   function ($scope, $http, $state, Auth) {
     Auth.logout()
-    $scope.signup = false
+    $scope.signup = true
     $scope.userLogin = function (email, password) {
       Auth.login(email, password).then(function (data) {
         console.log(data)
@@ -22,13 +22,22 @@ app
         return $scope.loginError = "Please complete all fields"
       }
 
-      $http.post(SERVER_URL + 'user/authenticate',
+      $http.post(SERVER_URL + 'user/signup',
         {email: email,
           username: username,
           password: password
       })
       .success(function (data) {
-        AuthToken.setToken(data.token)
+        console.log(data)
+        if (data.success) {
+          Auth.login(email, password).then(function (data) {
+            if (data.data.success) {
+              $state.go('home')
+            }
+          }, function (err) {
+            console.log("Signup Error: ", err)
+          })
+        }
         return data
       })
     }

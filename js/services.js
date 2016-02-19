@@ -44,6 +44,7 @@ function Auth($http, $q, AuthToken) {
   }
 
   authFactory.logout = function () {
+    authFactory.currentUser = null
     AuthToken.setToken()
   }
 
@@ -133,8 +134,7 @@ function VideoService($http, Upload) {
     console.log(song)
     var url = 'https://'+ BUCKET +'.s3.amazonaws.com/'+ song.songUrl
     service.syncSongWith(song)
-    $http.get(SERVER_URL + 'snippets/' + song._id, {songId: song._id}).then(
-      function (data) {
+    $http.get(SERVER_URL + 'snippets/' + song._id, {songId: song._id}).then(function (data) {
         console.log("Snippets: ", data)
         service.song.snippets = data.data
         document.getElementById('song-preview').src = url

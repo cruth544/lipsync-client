@@ -2,15 +2,15 @@
   <table class="song-list">
     <tr>
       <th>Song</th>
-      <th>Artist</th>
-      <th>Album</th>
+      <th>Owner</th>
+      <th>Users</th>
       <th>Length</th>
     </tr>
     <tr class="song" ng-repeat="song in songList" ng-click="songSelect(song)">
       <td class="song-name">{{song.name}}</td>
-      <td class="song-artist">{{song.owner}}</td>
-      <td class="song-album">{{song.users}}</td>
-      <td class="song-length">{{song.snippets.length}}</td>
+      <td class="song-artist">{{song.owner.username}}</td>
+      <td class="song-album"><span ng-repeat="user in song.users">{{user.username}}</span></td>
+      <td class="song-length">{{song.snippets.length}} Snippet{{song.snippets.length !== 1 ? 's' : ''}}</td>
     </tr>
   </table>
 
