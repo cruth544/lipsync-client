@@ -1,9 +1,11 @@
 'use strict'
-var app = angular.module('Lip', ['ui.router', 'ngFileUpload'])
-  .config(['$stateProvider', '$urlRouterProvider', MainRouter])
-  .run(['$rootScope', '$state', runFunction])
+var app = angular.module('Lip',
+  ['ui.router', 'ngFileUpload', 'AuthService'])
+  .config(['$stateProvider', '$urlRouterProvider', '$httpProvider', MainRouter])
+  .run(['$rootScope', '$state', '$location', 'Auth', runFunction])
 
-function MainRouter($stateProvider, $urlRouterProvider) {
+function MainRouter($stateProvider, $urlRouterProvider, $httpProvider) {
+  $httpProvider.interceptors.push('AuthInterceptor')
 
   $stateProvider
     .state('home', {
@@ -30,13 +32,30 @@ function MainRouter($stateProvider, $urlRouterProvider) {
       params: null,
       controller: 'FriendsCtrl'
     })
+    .state('login', {
+      url: '/login',
+      templateUrl: 'templates/login-modal.html',
+      params: null,
+      controller: 'LoginCtrl'
+    })
 
   $urlRouterProvider.otherwise('/')
 }
 
-function runFunction($rootScope, $state) {
+function runFunction($rootScope, $state, $location, Auth) {
   $rootScope.previousState;
   $rootScope.currentState;
+
+  $rootScope.$on('$stateChangeStart', function () {
+    if (!Auth.currentUser) {
+      Auth.getUser().then(function (data) {
+        Auth.currentUser = data.data._id
+      })
+    }
+    // if (Auth.isLoggedIn()) return
+    // $location.path('/login')
+  })
+
   $rootScope.$on('$stateChangeSuccess', function(ev, to, toParams, from, fromParams) {
       $rootScope.previousState = from.name;
       $rootScope.currentState = to.name;

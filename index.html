@@ -10,15 +10,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.18/angular-ui-router.js"></script>
   <script src="https://sdk.amazonaws.com/js/aws-sdk-2.2.36.min.js"></script>
   <script src="https://api-cdn.amazon.com/sdk/login1.js" async></script>
-  <script src="js/app.js"></script>
-  <script src="node_modules/angular-upload/angular-upload.min.js"></script>
-  <script src="node_modules/ng-file-upload/dist/ng-file-upload-shim.js"></script> <!-- for no html5 browsers support -->
-  <script src="node_modules/ng-file-upload/dist/ng-file-upload.js"></script>
-  <script src="js/services.js"></script>
-  <script src="js/controllers.js"></script>
-</head>
-<body ng-app="Lip">
-  <script>
+<!--   <script>
     window.fbAsyncInit = function() {
       FB.init({
         appId      : '220553008292943',
@@ -34,7 +26,15 @@
        js.src = "//connect.facebook.net/en_US/sdk.js";
        fjs.parentNode.insertBefore(js, fjs);
      }(document, 'script', 'facebook-jssdk'));
-  </script>
+  </script> -->
+  <script src="js/app.js"></script>
+  <script src="node_modules/angular-upload/angular-upload.min.js"></script>
+  <script src="node_modules/ng-file-upload/dist/ng-file-upload-shim.js"></script> <!-- for no html5 browsers support -->
+  <script src="node_modules/ng-file-upload/dist/ng-file-upload.js"></script>
+  <script src="js/services.js"></script>
+  <script src="js/controllers.js"></script>
+</head>
+<body ng-app="Lip">
   <script>
     // This is called with the results from from FB.getLoginStatus().
     function statusChangeCallback(response) {
@@ -121,11 +121,6 @@
     the JavaScript SDK to present a graphical Login button that triggers
     the FB.login() function when clicked.
   -->
-    <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
-    </fb:login-button>
-
-  <div id="status">
-  </div>
   <div class="wrapper" ui-view>
 
   </div>

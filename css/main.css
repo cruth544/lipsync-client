@@ -4,6 +4,12 @@ video {
   background-size: contain;
 }
 
+.sign-up {
+  color: blue;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 .my-buttons {
   border-radius: 25px;
 }

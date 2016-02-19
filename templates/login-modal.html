@@ -1,0 +1,16 @@
+<h1>LOG IN</h1>
+  <form ng-submit="userLogin(email, password)" ng-show="!signup">
+    <input type="email" placeholder="E-mail" ng-model="email">
+    <input type="password" placeholder="Password" ng-model="password">
+    <input type="submit">
+    <div class="sign-up" ng-click="signup = !signup">Sign up?</div>
+  </form>
+  <form ng-submit="userSignup(email, username, password)" ng-show="signup">
+    <input type="email" placeholder="E-mail" ng-model="email">
+    <input type="text" placeholder="Username" ng-model="username">
+    <input type="password" placeholder="Password" ng-model="password">
+    <input type="submit">
+    <div class="sign-up" ng-click="signup = !signup">Already a user?</div>
+  </form>
+  <div class="login-error">{{loginError}}</div>
+</div>

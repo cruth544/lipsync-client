@@ -1,21 +1,57 @@
 app
+.controller('LoginCtrl',
+  ['$scope', '$http', '$state', 'Auth',
+  function ($scope, $http, $state, Auth) {
+    Auth.logout()
+    $scope.signup = false
+    $scope.userLogin = function (email, password) {
+      Auth.login(email, password).then(function (data) {
+        console.log(data)
+        if (data.data.success) {
+          $state.go('home')
+        } else {
+          $scope.loginError = data.data.message
+        }
+      }, function (err) {
+        console.log("Login Error: ", err)
+      })
+    }
+
+    $scope.userSignup = function (email, username, password) {
+      if (!email || !username || !password) {
+        return $scope.loginError = "Please complete all fields"
+      }
+
+      $http.post(SERVER_URL + 'user/authenticate',
+        {email: email,
+          username: username,
+          password: password
+      })
+      .success(function (data) {
+        AuthToken.setToken(data.token)
+        return data
+      })
+    }
+  }])
 .controller('SongCtrl',
-  ['$scope', '$http', '$state', '$stateParams', '$rootScope', 'Video',
-  function ($scope, $http, $state, $stateParams, $rootScope, Video) {
+  ['$scope', '$state', '$stateParams', '$rootScope', 'Video', 'Auth',
+  function ($scope, $state, $stateParams, $rootScope, Video, Auth) {
+
     $scope.back = $rootScope.back
     $scope.variable = "hello"
     $scope.songList = Video.songList
     $scope.songSelect = function (song) {
+      song.owner = Auth.currentUser
       Video.getSong(song)
       $state.go('watch')
     }
     $scope.addSong = function (song) {
       song = song.files[0]
-      console.log(song)
+      console.log("Song: ", song)
       Video.song.name = song.name
       Video.song.songUrl = window.URL.createObjectURL(song)
       Video.song.songFile = song
-      //Video.song.owner = User.name
+      Video.song.owner = Auth.currentUser
       $state.go('record')
     }
     Video.getSongList(function (songList) {
@@ -28,7 +64,6 @@ app
     $scope.back = $rootScope.back
     if (!Video.video) return $scope.back()
     console.log("Service: ", Video.video)
-    // $http.post('https://sync-lip.herokuapp.com/song', {video: Video.video, song: Video.song})
     Video.upload(Video.video, Video.song)
     Video.getSong(Video.song)
     $state.go('watch')
@@ -76,6 +111,7 @@ app
     function changeVideoSourceTo(snippet) {
       var bucket = 'lipsyncwith.us-data'
       var url = 'https://'+ bucket +'.s3.amazonaws.com/'+ snippet.videoUrl
+      console.log(snippet.startTime)
       songPreview.currentTime = snippet.startTime
       if (!songPreview.paused) songPreview.pause()
       videoPreview.src = url
@@ -132,7 +168,7 @@ app
     var nextButton    = document.getElementById('next-button')
 
     var recording = false
-    // var beforeSeek = 0
+    var songReady = false
     var windowSize = {
       height: document.body.clientHeight || window.innerHeight,
       width: document.body.clientWidth || window.innerWidth
@@ -148,9 +184,9 @@ app
     }
     var songPreview = document.getElementById('song-preview')
     songPreview.setAttribute('controls', 'controls')
-    // songPreview.addEventListener("seeking", function(event){
-    //   beforeSeek = event.target.currentTime
-    // })
+    songPreview.addEventListener("canplaythrough", function(event){
+      songReady = true
+    })
     songPreview.addEventListener('seeked', function (event) {
       if (recording) {
         $scope.cancel()
@@ -160,9 +196,14 @@ app
     if (Video.song) {
       var bucket = 'lipsyncwith.us-data'
       var url = 'https://'+ bucket +'.s3.amazonaws.com/'+ Video.song.songUrl
+      if (Video.song.songFile) {
+        url = window.URL.createObjectURL(Video.song.songFile);
+      }
       songPreview.src = url
       songPreview.load()
-      songPreview.currentTime = Video.song.snippets[Video.song.snippets.length - 1].endTime
+      if (Video.song.snippets) {
+        songPreview.currentTime = Video.song.snippets[Video.song.snippets.length - 1].endTime
+      }
     }
 
 
@@ -246,7 +287,7 @@ app
 ////////////////////////////RECORD FUNCTIONS////////////////////////////
     $scope.toggleRecording = function() {
       if (!recording) {
-        $scope.startRecording()
+        if (songReady) $scope.startRecording()
       } else {
         $scope.stopRecording()
       }
